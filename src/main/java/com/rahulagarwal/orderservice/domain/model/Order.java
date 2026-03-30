@@ -8,7 +8,6 @@ import com.rahulagarwal.orderservice.domain.exception.OrderItemNotFoundException
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 import java.util.UUID;
 
@@ -211,19 +210,46 @@ public class Order {
         Money total = Money.zero("INR");
 
         for (OrderItem item : orderItems) {
-            total = total.add(item.getPrice().multiply(item.getQuantity()));
+            total = total.add(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
         }
 
-        BigDecimal tax = totalPrice.multiply(BigDecimal.valueOf(0.18));
-        BigDecimal otherCharges = totalPrice.multiply(BigDecimal.valueOf(0.05));
+        Money tax = total.multiply(BigDecimal.valueOf(0.18));
+        Money otherCharges = tax.multiply(BigDecimal.valueOf(0.05));
 
-        BigDecimal totalAmount = totalPrice.add(tax).add(otherCharges);
-
-        return new Money(
-                totalAmount,
-                Currency.getInstance("INR")
-        );
-
+        return total.add(tax).add(otherCharges);
     }
 
+    // Getters
+
+    public OrderId getOrderId() {
+        return orderId;
+    }
+
+    public UserId getUserId() {
+        return userId;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
+    }
+
+    public PaymentStatus getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public Money getTotalAmount() {
+        return totalAmount;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
 }
