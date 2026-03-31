@@ -3,5 +3,13 @@ package com.rahulagarwal.orderservice.domain.model;
 import java.util.UUID;
 
 public class UserId {
-    UUID id;
+    private final UUID id;
+
+    public UserId(UUID id) {
+        this.id = id;
+    }
+
+    public UUID getId() {
+        return id;
+    }
 }

@@ -7,9 +7,7 @@ import com.rahulagarwal.orderservice.domain.exception.OrderItemNotFoundException
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Order {
 
@@ -21,6 +19,8 @@ public class Order {
     private Money totalAmount;
     private final Instant createdAt;
     private Instant updatedAt;
+
+    private final List<DomainEvent> events = new ArrayList<>();
 
     private Order(
             OrderId orderId,
@@ -57,16 +57,29 @@ public class Order {
         if(orderItems == null || orderItems.isEmpty())
             throw new InvalidStateException("Order items cannot be null or empty");
 
-        return new Order(
+        Instant createdAt = Instant.now();
+
+        Order order = new Order(
                 orderId,
                 userId,
                 orderItems,
                 PaymentStatus.PENDING,
                 OrderStatus.CREATED,
                 calculateTotalAmount(orderItems),
-                Instant.now(),
+                createdAt,
                 null
         );
+
+        order.addEvent(
+                new OrderCreatedEvent(
+                        orderId,
+                        userId,
+                        createdAt
+                )
+        );
+
+        return order;
+
     }
 
     public static Order restore(
@@ -219,6 +232,18 @@ public class Order {
         return total.add(tax).add(otherCharges);
     }
 
+    private void addEvent(DomainEvent event)
+    {
+        this.events.add(event);
+    }
+
+    public List<DomainEvent> pullEvents()
+    {
+        List<DomainEvent> pulledEvents = new ArrayList<>(this.events);
+        this.events.clear();
+        return pulledEvents;
+    }
+
     // Getters
 
     public OrderId getOrderId() {
@@ -230,7 +255,7 @@ public class Order {
     }
 
     public List<OrderItem> getOrderItems() {
-        return orderItems;
+        return Collections.unmodifiableList(orderItems);
     }
 
     public OrderStatus getOrderStatus() {

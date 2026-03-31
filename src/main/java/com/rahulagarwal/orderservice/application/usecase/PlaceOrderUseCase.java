@@ -6,6 +6,7 @@ import com.rahulagarwal.orderservice.application.port.OrderRepositoryPort;
 import com.rahulagarwal.orderservice.application.port.OutboxRepositoryPort;
 import com.rahulagarwal.orderservice.application.port.PlaceOrderUseCasePort;
 import com.rahulagarwal.orderservice.application.port.ProductQueryPort;
+import com.rahulagarwal.orderservice.domain.model.DomainEvent;
 import com.rahulagarwal.orderservice.domain.model.Money;
 import com.rahulagarwal.orderservice.domain.model.Order;
 import com.rahulagarwal.orderservice.domain.model.OrderItem;
@@ -49,10 +50,14 @@ public class PlaceOrderUseCase implements PlaceOrderUseCasePort {
                 itemList
         );
 
-        OutboxEvent event = new OutboxEvent("ORDER_CREATED");
-
         orderRepository.save(order);
-        outboxRepository.save(event);
+
+        List<DomainEvent> events = order.pullEvents();
+
+        for(DomainEvent event : events)
+        {
+            outboxRepository.save(event);
+        }
 
         return new PlaceOrderResult(
                 order.getOrderId()
