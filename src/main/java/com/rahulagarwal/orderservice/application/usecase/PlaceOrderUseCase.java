@@ -78,7 +78,6 @@ public class PlaceOrderUseCase implements PlaceOrderUseCasePort {
     {
         if(event instanceof OrderCreatedEvent e)
         {
-
             Instant now = Instant.now();
 
             return new OutboxEvent(
