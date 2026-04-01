@@ -1,5 +1,6 @@
-package com.rahulagarwal.orderservice.domain.model;
+package com.rahulagarwal.orderservice.domain.model.order;
 import com.rahulagarwal.orderservice.domain.exception.InvalidStateException;
+import com.rahulagarwal.orderservice.domain.model.shared.Money;
 
 import java.util.UUID;
 

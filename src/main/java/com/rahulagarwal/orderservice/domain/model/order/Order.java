@@ -1,9 +1,12 @@
-package com.rahulagarwal.orderservice.domain.model;
+package com.rahulagarwal.orderservice.domain.model.order;
 
 import com.rahulagarwal.orderservice.domain.exception.CancellationNotAllowedException;
 import com.rahulagarwal.orderservice.domain.exception.InvalidStateException;
 import com.rahulagarwal.orderservice.domain.exception.OrderAlreadyProcessedException;
 import com.rahulagarwal.orderservice.domain.exception.OrderItemNotFoundException;
+import com.rahulagarwal.orderservice.domain.model.shared.DomainEvent;
+import com.rahulagarwal.orderservice.domain.model.shared.Money;
+import com.rahulagarwal.orderservice.domain.model.shared.UserId;
 
 import java.math.BigDecimal;
 import java.time.Instant;

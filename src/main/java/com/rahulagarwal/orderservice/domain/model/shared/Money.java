@@ -1,4 +1,4 @@
-package com.rahulagarwal.orderservice.domain.model;
+package com.rahulagarwal.orderservice.domain.model.shared;
 
 import java.math.BigDecimal;
 import java.util.Currency;

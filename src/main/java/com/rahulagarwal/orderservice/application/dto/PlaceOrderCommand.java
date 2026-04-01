@@ -1,6 +1,6 @@
 package com.rahulagarwal.orderservice.application.dto;
 
-import com.rahulagarwal.orderservice.domain.model.UserId;
+import com.rahulagarwal.orderservice.domain.model.shared.UserId;
 
 import java.util.List;
 

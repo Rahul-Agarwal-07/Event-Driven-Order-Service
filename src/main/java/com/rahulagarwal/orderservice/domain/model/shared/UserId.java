@@ -1,11 +1,11 @@
-package com.rahulagarwal.orderservice.domain.model;
+package com.rahulagarwal.orderservice.domain.model.shared;
 
 import java.util.UUID;
 
-public class OrderId {
+public class UserId {
     private final UUID id;
 
-    public OrderId(UUID id) {
+    public UserId(UUID id) {
         this.id = id;
     }
 
