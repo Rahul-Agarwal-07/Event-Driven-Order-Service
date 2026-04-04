@@ -34,4 +34,5 @@ public class OrderCreatedEvent implements DomainEvent {
     public UserId getUserId() {
         return userId;
     }
+
 }
