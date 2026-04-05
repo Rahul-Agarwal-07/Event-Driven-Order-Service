@@ -24,6 +24,7 @@ public class KafkaEventPublisher implements EventPublisherPort {
             kafkaTemplate
                     .send(TOPIC, event.getAggregateId().getValue(), event)
                     .get();
+
         } catch (Exception e) {
             throw new EventPublishFailedException(
                     "Failed to publish event : " + event.getEventId(), e

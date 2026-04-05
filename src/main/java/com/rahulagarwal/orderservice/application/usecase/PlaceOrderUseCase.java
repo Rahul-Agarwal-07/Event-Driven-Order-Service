@@ -12,6 +12,7 @@ import com.rahulagarwal.orderservice.domain.model.order.OrderCreatedEvent;
 import com.rahulagarwal.orderservice.domain.model.outbox.AggregateId;
 import com.rahulagarwal.orderservice.domain.model.outbox.EventId;
 import com.rahulagarwal.orderservice.domain.model.outbox.OutboxEvent;
+import com.rahulagarwal.orderservice.domain.model.outbox.OutboxStatus;
 import com.rahulagarwal.orderservice.domain.model.shared.DomainEvent;
 import com.rahulagarwal.orderservice.domain.model.shared.Money;
 import com.rahulagarwal.orderservice.domain.model.order.Order;
@@ -86,6 +87,7 @@ public class PlaceOrderUseCase implements PlaceOrderUseCasePort {
                     "ORDER",
                     event.getEventType(),
                     serialize(event),
+                    OutboxStatus.PENDING,
                     event.getOccurredAt(),
                     now,
                     now,
