@@ -33,4 +33,32 @@ public class EventEnvelope {
         this.occurredAt = occurredAt;
         this.createdAt = createdAt;
     }
+
+    public EventId getEventId() {
+        return eventId;
+    }
+
+    public AggregateId getAggregateId() {
+        return aggregateId;
+    }
+
+    public String getAggregateType() {
+        return aggregateType;
+    }
+
+    public String getEventType() {
+        return eventType;
+    }
+
+    public String getPayload() {
+        return payload;
+    }
+
+    public Instant getOccurredAt() {
+        return occurredAt;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
 }

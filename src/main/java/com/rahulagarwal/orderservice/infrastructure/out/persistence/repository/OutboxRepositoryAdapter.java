@@ -23,7 +23,7 @@ public class OutboxRepositoryAdapter implements OutboxRepositoryPort {
     private static final long BASE_DELAY = 5000;
 
     @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     @Override
     public void save(OutboxEvent event) {

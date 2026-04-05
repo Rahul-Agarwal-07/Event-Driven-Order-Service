@@ -17,7 +17,11 @@ public class PublishEventUseCase implements PublishEventUseCasePort {
     private final EventPublisherPort eventPublisher;
     private final WorkerIdentity workerIdentity;
 
-    public PublishEventUseCase(OutboxRepositoryPort outboxRepository, EventPublisherPort eventPublisher, WorkerIdentity workerIdentity) {
+    public PublishEventUseCase(
+            OutboxRepositoryPort outboxRepository,
+            EventPublisherPort eventPublisher,
+            WorkerIdentity workerIdentity
+    ) {
         this.outboxRepository = outboxRepository;
         this.eventPublisher = eventPublisher;
         this.workerIdentity = workerIdentity;
