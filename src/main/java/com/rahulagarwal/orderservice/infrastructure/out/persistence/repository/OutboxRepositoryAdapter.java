@@ -16,7 +16,6 @@ import java.time.Instant;
 import java.util.List;
 
 @Repository
-@RequiredArgsConstructor
 public class OutboxRepositoryAdapter implements OutboxRepositoryPort {
 
     private static final int MAX_RETRIES = 3;
@@ -24,6 +23,10 @@ public class OutboxRepositoryAdapter implements OutboxRepositoryPort {
 
     @PersistenceContext
     private final EntityManager entityManager;
+
+    public OutboxRepositoryAdapter(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public void save(OutboxEvent event) {

@@ -122,4 +122,76 @@ public class PublishEventUseCaseTest {
         verify(eventPublisher).publish(any(EventEnvelope.class));
         verify(outboxRepository).markAsFailed(eq(event.getEventId()), anyString());
     }
+
+    @Test
+    void should_do_nothing_when_no_event_is_found()
+    {
+        List<OutboxEvent> events = new ArrayList<>();
+
+        when(workerIdentity.getWorkerId())
+                .thenReturn("worker-id1");
+
+        when(outboxRepository.fetchAndMarkProcessing(anyInt(), anyString()))
+                .thenReturn(events);
+
+        publishEventUseCase.execute();
+
+        verify(eventPublisher, never()).publish(any(EventEnvelope.class));
+        verify(outboxRepository, never()).markAsPublished(any(EventId.class));
+        verify(outboxRepository, never()).markAsFailed(any(EventId.class), anyString());
+    }
+
+    @Test
+    void should_publish_partial_events()
+    {
+        List<OutboxEvent> pendingEvents = new ArrayList<>();
+
+        pendingEvents.add(
+                new OutboxEvent(
+                        new EventId(UUID.randomUUID()),
+                        new AggregateId(UUID.randomUUID()),
+                        "ORDER",
+                        "ORDER_CREATED",
+                        "event-payload",
+                        OutboxStatus.PENDING,
+                        Instant.now(),
+                        Instant.now(),
+                        Instant.now(),
+                        0,
+                        null
+                )
+        );
+
+        pendingEvents.add(
+                new OutboxEvent(
+                        new EventId(UUID.randomUUID()),
+                        new AggregateId(UUID.randomUUID()),
+                        "ORDER",
+                        "ORDER_CREATED",
+                        "event-payload",
+                        OutboxStatus.PENDING,
+                        Instant.now(),
+                        Instant.now(),
+                        Instant.now(),
+                        0,
+                        null
+                )
+        );
+
+        when(workerIdentity.getWorkerId())
+                .thenReturn("worker-id1");
+
+        when(outboxRepository.fetchAndMarkProcessing(anyInt(), anyString()))
+                .thenReturn(pendingEvents);
+
+        doNothing()
+                .doThrow(new RuntimeException("Kafka Down"))
+                .when(eventPublisher).publish(any(EventEnvelope.class));
+
+        publishEventUseCase.execute();
+
+        verify(eventPublisher, times(2)).publish(any(EventEnvelope.class));
+        verify(outboxRepository, times(1)).markAsPublished(any(EventId.class));
+        verify(outboxRepository, times(1)).markAsFailed(any(EventId.class), anyString());
+    }
 }
