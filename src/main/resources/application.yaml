@@ -21,3 +21,4 @@ app:
   kafka:
     topics:
       order-events: order-events
+      order-events-dlq: order-events-dlq
