@@ -15,7 +15,9 @@ spring:
         enable.idempotence: true
 
     consumer:
-      group-id : order-group
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
 
 app:
   kafka:

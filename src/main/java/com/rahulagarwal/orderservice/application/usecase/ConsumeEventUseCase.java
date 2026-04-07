@@ -6,6 +6,7 @@ import com.rahulagarwal.orderservice.domain.model.consumer.ProcessedEvent;
 import com.rahulagarwal.orderservice.domain.model.shared.EventEnvelope;
 import jakarta.transaction.Transactional;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 

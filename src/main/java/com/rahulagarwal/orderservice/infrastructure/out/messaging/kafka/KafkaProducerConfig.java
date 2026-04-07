@@ -1,5 +1,6 @@
 package com.rahulagarwal.orderservice.infrastructure.out.messaging.kafka;
 
+import com.rahulagarwal.orderservice.domain.model.shared.EventEnvelope;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,5 +19,11 @@ public class KafkaProducerConfig {
     @Bean
     public KafkaTemplate<String, Object> kafkaTemplate(ProducerFactory<String, Object> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
+    }
+
+    @Bean
+    public KafkaEventPublisher kafkaEventPublisher(KafkaTemplate<String, EventEnvelope> kafkaTemplate)
+    {
+        return new KafkaEventPublisher(kafkaTemplate);
     }
 }

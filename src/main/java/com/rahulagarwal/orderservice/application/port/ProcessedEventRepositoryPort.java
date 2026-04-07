@@ -5,6 +5,7 @@ import com.rahulagarwal.orderservice.domain.model.outbox.EventId;
 
 public interface ProcessedEventRepositoryPort {
 
+    boolean existsByEventId(EventId eventId);
     void save(ProcessedEvent event);
 
 }
