@@ -15,10 +15,19 @@ public class KafkaEventConsumer {
         this.consumeEventUseCase = consumeEventUseCase;
     }
 
-    @KafkaListener(topics = "${app.kafka.topics.order-events}")
+    @KafkaListener(topics = "${app.kafka.topics.order-events}", groupId = "order-group")
     void consume(EventEnvelope event)
     {
-        consumeEventUseCase.execute(event);
+        System.out.println("RECEIVED EVENT: " + event);
+
+        try {
+            consumeEventUseCase.execute(event);
+            System.out.println("PROCESS SUCCESS");
+        } catch (Exception e) {
+            System.out.println("PROCESS FAILED: " + e.getMessage());
+            e.printStackTrace();
+            throw e; // IMPORTANT (so retry works)
+        }
     }
 
 }

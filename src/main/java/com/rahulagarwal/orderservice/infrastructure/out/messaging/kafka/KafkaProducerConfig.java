@@ -12,13 +12,13 @@ import org.springframework.kafka.core.ProducerFactory;
 public class KafkaProducerConfig {
 
     @Bean
-    public ProducerFactory<String, Object> producerFactory(KafkaProperties properties) {
+    public ProducerFactory<String, EventEnvelope> producerFactory(KafkaProperties properties) {
         return new DefaultKafkaProducerFactory<>(properties.buildProducerProperties());
     }
 
     @Bean
-    public KafkaTemplate<String, Object> kafkaTemplate(ProducerFactory<String, Object> producerFactory) {
-        return new KafkaTemplate<>(producerFactory);
+    public KafkaTemplate<String, EventEnvelope> kafkaTemplate(ProducerFactory<String, EventEnvelope> producerFactory) {
+        return new KafkaTemplate<String, EventEnvelope>(producerFactory);
     }
 
     @Bean

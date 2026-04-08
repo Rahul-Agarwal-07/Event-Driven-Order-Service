@@ -2,9 +2,11 @@ package com.rahulagarwal.orderservice.domain.model.shared;
 
 import com.rahulagarwal.orderservice.domain.model.outbox.AggregateId;
 import com.rahulagarwal.orderservice.domain.model.outbox.EventId;
-import com.rahulagarwal.orderservice.domain.model.outbox.OutboxStatus;
 
 import java.time.Instant;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EventEnvelope {
 
@@ -16,14 +18,15 @@ public class EventEnvelope {
     private final Instant occurredAt;
     private final Instant createdAt;
 
+    @JsonCreator
     public EventEnvelope(
-            EventId eventId,
-            AggregateId aggregateId,
-            String aggregateType,
-            String eventType,
-            String payload,
-            Instant occurredAt,
-            Instant createdAt
+            @JsonProperty("eventId") EventId eventId,
+            @JsonProperty("aggregateId") AggregateId aggregateId,
+            @JsonProperty("aggregateType") String aggregateType,
+            @JsonProperty("eventType") String eventType,
+            @JsonProperty("payload") String payload,
+            @JsonProperty("occurredAt") Instant occurredAt,
+            @JsonProperty("createdAt") Instant createdAt
     ) {
         this.eventId = eventId;
         this.aggregateId = aggregateId;
@@ -34,6 +37,7 @@ public class EventEnvelope {
         this.createdAt = createdAt;
     }
 
+    // getters
     public EventId getEventId() {
         return eventId;
     }

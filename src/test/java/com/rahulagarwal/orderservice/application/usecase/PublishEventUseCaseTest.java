@@ -45,7 +45,7 @@ public class PublishEventUseCaseTest {
         pendingEvents.add(
                 new OutboxEvent(
                         new EventId(UUID.randomUUID()),
-                        new AggregateId(UUID.randomUUID()),
+                        new AggregateId(UUID.randomUUID().toString()),
                         "ORDER",
                         "ORDER_CREATED",
                         "event-payload",
@@ -61,7 +61,7 @@ public class PublishEventUseCaseTest {
         pendingEvents.add(
                 new OutboxEvent(
                         new EventId(UUID.randomUUID()),
-                        new AggregateId(UUID.randomUUID()),
+                        new AggregateId(UUID.randomUUID().toString()),
                         "ORDER",
                         "ORDER_CREATED",
                         "event-payload",
@@ -96,7 +96,7 @@ public class PublishEventUseCaseTest {
     {
         OutboxEvent event = new OutboxEvent(
                 new EventId(UUID.randomUUID()),
-                new AggregateId(UUID.randomUUID()),
+                new AggregateId(UUID.randomUUID().toString()),
                 "ORDER",
                 "ORDER_CREATED",
                 "event-payload",
@@ -149,7 +149,7 @@ public class PublishEventUseCaseTest {
         pendingEvents.add(
                 new OutboxEvent(
                         new EventId(UUID.randomUUID()),
-                        new AggregateId(UUID.randomUUID()),
+                        new AggregateId(UUID.randomUUID().toString()),
                         "ORDER",
                         "ORDER_CREATED",
                         "event-payload",
@@ -165,7 +165,7 @@ public class PublishEventUseCaseTest {
         pendingEvents.add(
                 new OutboxEvent(
                         new EventId(UUID.randomUUID()),
-                        new AggregateId(UUID.randomUUID()),
+                        new AggregateId(UUID.randomUUID().toString()),
                         "ORDER",
                         "ORDER_CREATED",
                         "event-payload",

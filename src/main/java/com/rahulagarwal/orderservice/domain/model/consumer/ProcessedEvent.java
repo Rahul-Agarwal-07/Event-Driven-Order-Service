@@ -12,4 +12,12 @@ public class ProcessedEvent {
         this.eventId = eventId;
         this.processedAt = processedAt;
     }
+
+    public EventId getEventId() {
+        return eventId;
+    }
+
+    public Instant getProcessedAt() {
+        return processedAt;
+    }
 }

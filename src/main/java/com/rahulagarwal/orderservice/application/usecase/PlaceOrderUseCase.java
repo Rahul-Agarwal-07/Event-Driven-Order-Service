@@ -83,7 +83,7 @@ public class PlaceOrderUseCase implements PlaceOrderUseCasePort {
 
             return new OutboxEvent(
                     new EventId(UUID.randomUUID()),
-                    new AggregateId(e.getOrderId()),
+                    new AggregateId(e.getOrderId().toString()),
                     "ORDER",
                     event.getEventType(),
                     serialize(event),

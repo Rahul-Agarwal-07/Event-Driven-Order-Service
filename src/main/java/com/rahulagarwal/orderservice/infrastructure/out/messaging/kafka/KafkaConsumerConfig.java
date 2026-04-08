@@ -1,6 +1,7 @@
 package com.rahulagarwal.orderservice.infrastructure.out.messaging.kafka;
 
 import com.rahulagarwal.orderservice.application.port.ConsumeEventUseCasePort;
+import com.rahulagarwal.orderservice.domain.model.shared.EventEnvelope;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +14,7 @@ import org.springframework.util.backoff.FixedBackOff;
 public class KafkaConsumerConfig {
 
     @Bean
-    public DeadLetterPublishingRecoverer recoverer(KafkaTemplate<String, Object> kafkaTemplate) {
+    public DeadLetterPublishingRecoverer recoverer(KafkaTemplate<String, EventEnvelope> kafkaTemplate) {
         return new DeadLetterPublishingRecoverer(
                 kafkaTemplate,
                 (record, ex) -> {

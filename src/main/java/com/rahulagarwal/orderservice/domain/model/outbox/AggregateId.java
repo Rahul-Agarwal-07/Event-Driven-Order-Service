@@ -1,13 +1,15 @@
 package com.rahulagarwal.orderservice.domain.model.outbox;
 
-import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AggregateId {
 
     private final String value;
 
-    public AggregateId(Object id) {
-        this.value = id.toString();
+    @JsonCreator
+    public AggregateId(@JsonProperty("value") String value) {
+        this.value = value;
     }
 
     public String getValue() {
