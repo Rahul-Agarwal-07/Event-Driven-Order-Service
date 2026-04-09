@@ -1,5 +1,6 @@
 package com.rahulagarwal.orderservice.infra.in.web;
 
+import com.rahulagarwal.orderservice.application.port.ConsumeEventUseCasePort;
 import com.rahulagarwal.orderservice.application.port.ProcessedEventRepositoryPort;
 import com.rahulagarwal.orderservice.domain.model.consumer.ProcessedEvent;
 import com.rahulagarwal.orderservice.domain.model.outbox.AggregateId;
@@ -9,7 +10,6 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -17,6 +17,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -67,6 +69,9 @@ class KafkaConsumerIntegrationTest {
 
     @Autowired
     private ConsumerFactory<String, EventEnvelope> consumerFactory;
+
+    @MockitoSpyBean
+    private ConsumeEventUseCasePort consumeEventUseCase;
 
     @Test
     void should_consume_and_process_event() throws Exception
@@ -179,6 +184,42 @@ class KafkaConsumerIntegrationTest {
                 .untilAsserted(() -> {
                     assertTrue(processedEventRepository
                             .existsByEventId(eventEnvelope.getEventId()));
+                });
+    }
+
+    @Test
+    void should_process_event_after_retrying_once() throws Exception
+    {
+        EventId eventId = new EventId(UUID.randomUUID());
+        AggregateId aggregateId = new AggregateId(UUID.randomUUID().toString());
+
+        EventEnvelope event = new EventEnvelope(
+                eventId,
+                aggregateId,
+                "ORDER",
+                "ORDER_CREATED",
+                "event-payload",
+                Instant.now(),
+                Instant.now()
+        );
+
+        doThrow(new RuntimeException("Fail Once"))
+                .doNothing()
+                .when(consumeEventUseCase)
+                .execute(any());
+
+
+        kafkaTemplate.send(
+                "order-events",
+                event.getAggregateId().getValue(),
+                event
+        ).get();
+
+
+        await()
+                .atMost(10, TimeUnit.SECONDS)
+                .untilAsserted(() ->  {
+                    verify(consumeEventUseCase, atLeast(2)).execute(any());
                 });
     }
 }

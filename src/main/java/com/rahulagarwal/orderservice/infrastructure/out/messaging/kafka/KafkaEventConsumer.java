@@ -26,7 +26,7 @@ public class KafkaEventConsumer {
         } catch (Exception e) {
             System.out.println("PROCESS FAILED: " + e.getMessage());
             e.printStackTrace();
-            throw e; // IMPORTANT (so retry works)
+            throw e; // rethrow so that spring kafka catches it and triggers retry mechanism
         }
     }
 
