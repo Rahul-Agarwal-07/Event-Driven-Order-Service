@@ -1,22 +1,34 @@
 package com.rahulagarwal.orderservice.infra.in.web;
 
 import com.rahulagarwal.orderservice.application.port.ProcessedEventRepositoryPort;
+import com.rahulagarwal.orderservice.domain.model.consumer.ProcessedEvent;
 import com.rahulagarwal.orderservice.domain.model.outbox.AggregateId;
 import com.rahulagarwal.orderservice.domain.model.outbox.EventId;
 import com.rahulagarwal.orderservice.domain.model.shared.EventEnvelope;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 
+import java.time.Duration;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @EmbeddedKafka(
@@ -53,6 +65,9 @@ class KafkaConsumerIntegrationTest {
     @Autowired
     private ProcessedEventRepositoryPort processedEventRepository;
 
+    @Autowired
+    private ConsumerFactory<String, EventEnvelope> consumerFactory;
+
     @Test
     void should_consume_and_process_event() throws Exception
     {
@@ -80,5 +95,90 @@ class KafkaConsumerIntegrationTest {
             });
     }
 
+    @Test
+    void should_send_event_to_dlq_when_processing_fails()
+    {
+        EventEnvelope event = new EventEnvelope(
+                new EventId(UUID.randomUUID()),
+                new AggregateId(UUID.randomUUID().toString()),
+                "ORDER",
+                "FAIL",
+                "event-payload",
+                Instant.now(),
+                Instant.now()
+        );
 
+        kafkaTemplate.send("order-events", event);
+
+        await()
+            .atMost(10, TimeUnit.SECONDS)
+            .untilAsserted(() -> {
+                assertFalse(processedEventRepository.existsByEventId(event.getEventId()));
+            }
+        );
+
+        Consumer<String, EventEnvelope> consumer =
+                consumerFactory.createConsumer("test-group", "test-client");
+
+        consumer.subscribe(Collections.singletonList("order-events-dlq"));
+
+        ConsumerRecords<String, EventEnvelope> records =
+                KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(10));
+
+        boolean found = false;
+
+        for(ConsumerRecord<String, EventEnvelope> record : records)
+        {
+            if(record.value().getEventId().equals(event.getEventId()))
+            {
+                found = true;
+            }
+        }
+
+        assertTrue(found);
+    }
+
+    @Test
+    void should_not_process_duplicate_event_again() throws Exception
+    {
+        EventEnvelope eventEnvelope = new EventEnvelope(
+                new EventId(UUID.randomUUID()),
+                new AggregateId(UUID.randomUUID().toString()),
+                "ORDER",
+                "ORDER_CREATED",
+                "event-payload",
+                Instant.now(),
+                Instant.now()
+        );
+
+        // first time
+
+        kafkaTemplate.send(
+                "order-events",
+                eventEnvelope.getAggregateId().getValue(),
+                eventEnvelope
+        ).get();
+
+        await()
+            .atMost(5, TimeUnit.SECONDS)
+            .untilAsserted(() -> {
+                assertTrue(processedEventRepository
+                        .existsByEventId(eventEnvelope.getEventId()));
+            });
+
+        // Second time
+        kafkaTemplate.send(
+                "order-events",
+                eventEnvelope.getAggregateId().getValue(),
+                eventEnvelope
+        ).get();
+
+        // Checks event is processed only once
+        await()
+                .atMost(5, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    assertTrue(processedEventRepository
+                            .existsByEventId(eventEnvelope.getEventId()));
+                });
+    }
 }

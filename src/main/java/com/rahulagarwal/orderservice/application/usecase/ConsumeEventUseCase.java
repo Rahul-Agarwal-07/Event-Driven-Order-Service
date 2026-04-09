@@ -22,6 +22,9 @@ public class ConsumeEventUseCase implements ConsumeEventUseCasePort {
     @Override
     public void execute(EventEnvelope event) {
 
+        if("FAIL".equals(event.getEventType()))
+            throw new RuntimeException("Forcing Failure");
+
         try {
             processedEventRepository.save(
                     new ProcessedEvent(
