@@ -1,7 +1,9 @@
 package com.rahulagarwal.orderservice.infrastructure.out.persistence.entity;
 
 import com.rahulagarwal.orderservice.domain.model.outbox.OutboxStatus;
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Type;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -49,12 +51,12 @@ public class OutboxEventEntity {
     @Column(nullable = false)
     private Integer retryCount = 0;
 
-    @Column(nullable = false)
     private Instant nextRetryAt;
 
     @Column(length = 1000)
     private String errorMessage;
 
+    @Type(JsonType.class)
     @Column(columnDefinition = "jsonb", nullable = false)
     private String payload;
 

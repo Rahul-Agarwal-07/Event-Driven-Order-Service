@@ -221,6 +221,7 @@ public class Order {
         throw new OrderItemNotFoundException();
     }
 
+
     private static Money calculateTotalAmount(List<OrderItem> orderItems) {
 
         Money total = Money.zero("INR");

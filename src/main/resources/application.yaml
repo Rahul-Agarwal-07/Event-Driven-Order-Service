@@ -2,8 +2,17 @@ spring:
   application:
     name: order-service
 
+  datasource:
+    url: jdbc:postgresql://postgres:5432/orders
+    username: user
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: kafka:9092
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -24,3 +33,15 @@ app:
     topics:
       order-events: order-events
       order-events-dlq: order-events-dlq
+
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: always
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+
